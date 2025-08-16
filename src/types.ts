@@ -1,12 +1,41 @@
 export type TokenResponse = {
-  access_token: string;
-  refresh_token: string;
+  token_type: string;
   expires_at: number;
-  athlete?: {
-    id: number;
-    firstname: string;
-    lastname: string;
-  };
+  expires_in: number;
+  refresh_token: string;
+  access_token: string;
+  athlete: Athlete;
+};
+
+export type Athlete = {
+  id: number;
+  username: string;
+  /** Resource state, indicates level of detail. Possible values: 1 -> "meta", 2 -> "summary", 3 -> "detail"  */
+  resource_state: number;
+  firstname: string;
+  lastname: string;
+  bio: string;
+  city: string;
+  state: string;
+  country: string;
+  /** The athlete's sex. May take one of the following values: M, F */
+  sex: string;
+  /** Deprecated. Use summit field instead. Whether the athlete has any Summit subscription. */
+  premium: boolean;
+  /** Whether the athlete has any Summit subscription. */
+  summit: boolean;
+  /** "2018-08-07T21:10:07Z" */
+  created_at: string;
+  /** "2025-08-20T18:56:36Z" */
+  updated_at: string;
+  badge_type_id: number;
+  weight: number;
+  /** url */
+  profile_medium: string;
+  /** url */
+  profile: string;
+  friend: null;
+  follower: null;
 };
 
 export type SportType =

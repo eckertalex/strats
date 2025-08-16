@@ -1,16 +1,17 @@
+import { AlertCircle as AlertCircleIcon } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 
-interface ErrorFallbackProps {
+export type ErrorFallbackProps = {
   error: Error;
   resetErrorBoundary: () => void;
-}
+};
 
 export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
   return (
     <Alert variant="destructive" className="max-w-md mx-auto mt-8">
-      <AlertCircle className="h-4 w-4" />
+      <AlertCircleIcon className="h-4 w-4" />
       <AlertDescription className="mt-2">
         <p className="font-medium">Something went wrong</p>
         <p className="text-sm mt-1">{error.message}</p>

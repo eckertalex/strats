@@ -1,16 +1,21 @@
+import { useAuth } from "@/features/auth/auth-context";
 import { Button } from "@/components/ui/button";
-import { buildAuthorizeUrl } from "@/lib/oauth-utils";
 
-export function Unauthorized() {
-  const handleConnect = () => {
-    try {
-      const authorizeUrl = buildAuthorizeUrl();
-      window.location.href = authorizeUrl;
-    } catch (error) {
-      console.error("Failed to build authorize URL:", error);
-      throw new Error("Configuration error: Unable to connect to Strava");
-    }
-  };
+export function Auth() {
+  const { connect, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="text-center max-w-md mx-auto">
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <span>Connecting to Strava...</span>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Please wait while we complete the authorization process.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="text-center max-w-md mx-auto">
@@ -21,7 +26,7 @@ export function Unauthorized() {
         </p>
       </div>
 
-      <Button onClick={handleConnect} size="lg" className="w-full">
+      <Button onClick={connect} size="lg" className="w-full">
         Connect to Strava
       </Button>
 

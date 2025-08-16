@@ -1,6 +1,4 @@
-import { STRAVA_CONFIG } from "./strava-config";
-import { getStoredTokens, clearStoredTokens } from "./token-manager";
-import type { SummaryActivity, ActivitiesParams } from "../types";
+import { clearStoredToken, getStoredToken } from "@/features/auth/token-manager";
 
 export class StravaApiError extends Error {
   public status?: number;
@@ -15,34 +13,24 @@ export class StravaApiError extends Error {
   }
 }
 
-export async function fetchAthleteActivities(
-  params: ActivitiesParams = {}
-): Promise<SummaryActivity[]> {
-  const tokens = getStoredTokens();
-  if (!tokens?.access_token) {
+export async function stravaFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const token = getStoredToken();
+  if (!token?.access_token) {
     throw new StravaApiError("No valid access token found. Please reconnect to Strava.");
   }
 
-  const searchParams = new URLSearchParams();
-  if (params.before) searchParams.set("before", params.before.toString());
-  if (params.after) searchParams.set("after", params.after.toString());
-  if (params.page) searchParams.set("page", params.page.toString());
-  if (params.per_page) searchParams.set("per_page", params.per_page.toString());
-
-  const url = `${STRAVA_CONFIG.apiBaseUrl}/athlete/activities${searchParams.toString() ? `?${searchParams}` : ""}`;
-
-  const response = await fetch(url, {
-    method: "GET",
+  const response = await fetch(`https://www.strava.com/api/v3${endpoint}`, {
+    ...options,
     headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${tokens.access_token}`,
+      Authorization: `Bearer ${token.access_token}`,
+      "Content-Type": "application/json",
+      ...options.headers,
     },
   });
 
   if (!response.ok) {
     if (response.status === 401) {
-      // Token is invalid, clear stored tokens
-      clearStoredTokens();
+      clearStoredToken();
       throw new StravaApiError("Authentication expired. Please reconnect to Strava.", 401);
     }
 
@@ -61,5 +49,5 @@ export async function fetchAthleteActivities(
     );
   }
 
-  return await response.json();
+  return response.json();
 }
